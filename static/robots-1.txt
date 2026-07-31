@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /entreprise/
+Disallow: /etudiant
+Disallow: /etudiant/
+Disallow: /deconnexion
+
+Sitemap: https://bensa.onrender.com/sitemap.xml
