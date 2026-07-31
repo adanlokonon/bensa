@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}À propos — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <h1>À propos de Bensa</h1>
+  <p><strong>Ben-Stage-Agro</strong> — populairement appelé « Bensa » — est une plateforme née d'un constat simple : dans le secteur agricole, la mise en relation entre entreprises et étudiants stagiaires reste trop souvent artisanale, longue et inefficace.</p>
+
+  <p>Notre mission : offrir un espace numérique <strong>sobre, simple et efficace</strong> pour que les exploitations et les jeunes talents se trouvent en quelques clics.</p>
+
+  <h2>Notre vision</h2>
+  <p>Nous croyons que la modernisation du secteur agricole passe par la formation et la transmission. Faciliter la vie des stagiaires et des recruteurs, c'est renforcer toute la filière.</p>
+
+  <h2>L'équipe</h2>
+  <p>Bensa est développé par <strong>CODEMASTER</strong> — développement web & solutions numériques.</p>
+
+  <div class="banner-essai mt-2">
+    <h3>Contact</h3>
+    <p>Email : <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+    <p>Téléphone (paiement d'abonnement) : {{ payment_phone }}</p>
+  </div>
+</div>
+{% endblock %}

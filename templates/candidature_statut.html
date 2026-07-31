@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Suivi de candidature — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <a href="{{ url_for('espace_etudiant') }}" class="text-muted">← Retour à mon espace</a>
+  <h1 class="mt-2">Suivi de ma candidature</h1>
+
+  <div class="offre-card">
+    <h2>{{ cand.offre_titre }}</h2>
+    <div class="offre-meta">
+      <span>🏢 {{ cand.entreprise_nom }}</span>
+      <span>📍 {{ cand.offre_lieu or '—' }}</span>
+      <span>📅 Envoyée le {{ cand.date_envoi[:10] }}</span>
+    </div>
+    <p><strong>Statut actuel :</strong> <span class="badge badge-{{ cand.statut }}">{{ cand.statut }}</span></p>
+
+    {% if cand.message %}
+      <h3 class="mt-2">Message envoyé</h3>
+      <p style="white-space:pre-line; background: var(--beige); padding:14px; border-radius:6px;">{{ cand.message }}</p>
+    {% endif %}
+
+    <h3 class="mt-2">Étapes du suivi</h3>
+    <ul style="list-style:none; padding:0;">
+      <li style="padding:8px 0; {% if cand.statut in ['envoyee','vue','contactee','refusee'] %}color: var(--vert-fonce); font-weight:600;{% else %}color: var(--gris);{% endif %}">
+        {% if cand.statut in ['envoyee','vue','contactee','refusee'] %}✅{% else %}⚪{% endif %} 1. Candidature envoyée
+      </li>
+      <li style="padding:8px 0; {% if cand.statut in ['vue','contactee'] %}color: var(--vert-fonce); font-weight:600;{% else %}color: var(--gris);{% endif %}">
+        {% if cand.statut in ['vue','contactee'] %}✅{% else %}⚪{% endif %} 2. Vue par l'entreprise
+      </li>
+      <li style="padding:8px 0; {% if cand.statut == 'contactee' %}color: var(--vert-fonce); font-weight:600;{% else %}color: var(--gris);{% endif %}">
+        {% if cand.statut == 'contactee' %}✅{% else %}⚪{% endif %} 3. Contactée par l'entreprise
+      </li>
+      {% if cand.statut == 'refusee' %}
+        <li style="padding:8px 0; color: var(--rouge); font-weight:600;">❌ Candidature refusée</li>
+      {% endif %}
+    </ul>
+
+    {% if cand.statut == 'contactee' %}
+      <div class="banner-essai mt-2">
+        <p>🎉 L'entreprise vous a contacté ! Écrivez-lui :</p>
+        <a href="mailto:{{ cand.entreprise_email }}" class="btn btn-primary btn-sm">✉️ {{ cand.entreprise_email }}</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Offres de stage — Bensa{% endblock %}
+{% block content %}
+<h1>🔎 Offres de stage disponibles</h1>
+
+<form method="GET" action="{{ url_for('liste_offres_stage') }}" class="mt-2" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+  <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher par mot-clé, lieu, secteur..." style="flex:1; padding:10px; border:1px solid var(--gris-clair); border-radius:6px;">
+  <button type="submit" class="btn btn-primary">Rechercher</button>
+  {% if recherche %}<a href="{{ url_for('liste_offres_stage') }}" class="btn btn-secondary">Réinitialiser</a>{% endif %}
+</form>
+
+{% if offres %}
+  <p class="text-muted">{{ offres|length }} offre(s) trouvée(s){% if recherche %} pour « {{ recherche }} »{% endif %}.</p>
+  {% for o in offres %}
+    <div class="offre-card">
+      <h3><a href="{{ url_for('detail_offre', offre_id=o.id) }}">{{ o.titre }}</a></h3>
+      <div class="offre-meta">
+        <span>🏢 {{ o.entreprise_nom }}</span>
+        <span>📍 {{ o.lieu or 'Lieu non précisé' }}</span>
+        <span>⏱ {{ o.duree or '—' }}</span>
+        <span>📅 {{ o.date_publication[:10] }}</span>
+      </div>
+      <p class="offre-description">{{ o.description[:200] }}{% if o.description|length > 200 %}…{% endif %}</p>
+      <a href="{{ url_for('detail_offre', offre_id=o.id) }}" class="btn btn-primary btn-sm">Voir & candidater</a>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="banner-essai mt-2">
+    <p>Aucune offre ne correspond{% if recherche %} à votre recherche « {{ recherche }} »{% endif %} pour l'instant.</p>
+  </div>
+{% endif %}
+{% endblock %}

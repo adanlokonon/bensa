@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Connexion — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <h1 class="text-center">Se connecter</h1>
+  <div class="grid-2 mt-3">
+    <div class="profil-card">
+      <h3>🎓 Étudiant</h3>
+      <a href="{{ url_for('connexion_etudiant') }}" class="btn btn-primary btn-block mt-2">Connexion étudiant</a>
+    </div>
+    <div class="profil-card">
+      <h3>🏢 Entreprise</h3>
+      <a href="{{ url_for('connexion_entreprise') }}" class="btn btn-primary btn-block mt-2">Connexion entreprise</a>
+    </div>
+  </div>
+  <p class="text-center mt-3">Pas encore de compte ? <a href="{{ url_for('inscription_choix') }}">S'inscrire</a></p>
+</div>
+{% endblock %}

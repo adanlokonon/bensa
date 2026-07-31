@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ offre.titre }} — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <a href="{{ url_for('liste_offres_stage') }}" class="text-muted">← Retour aux offres</a>
+  <div class="offre-card mt-2" style="padding: 30px;">
+    <h1>{{ offre.titre }}</h1>
+    <div class="offre-meta">
+      <span>🏢 <strong>{{ offre.entreprise_nom }}</strong></span>
+      <span>📍 {{ offre.lieu or 'Lieu non précisé' }}</span>
+      <span>⏱ {{ offre.duree or '—' }}</span>
+      <span>📅 Publiée le {{ offre.date_publication[:10] }}</span>
+    </div>
+
+    <h3 class="mt-2">Description</h3>
+    <p style="white-space:pre-line;">{{ offre.description }}</p>
+
+    {% if offre.competences %}
+      <h3 class="mt-2">Compétences recherchées</h3>
+      <p>{{ offre.competences }}</p>
+    {% endif %}
+
+    {% if offre.entreprise_desc %}
+      <h3 class="mt-2">À propos de l'entreprise</h3>
+      <p><strong>Secteur :</strong> {{ offre.secteur_agricole or 'Non précisé' }}</p>
+      <p>{{ offre.entreprise_desc }}</p>
+    {% endif %}
+  </div>
+
+  {# Candidature #}
+  <div class="form-card mt-3">
+    <h2>📩 Candidater à cette offre</h2>
+    {% if session_role == 'etudiant' %}
+      {% if deja_candidate %}
+        <p>✅ Vous avez déjà candidaté à cette offre. Consultez le statut depuis votre <a href="{{ url_for('espace_etudiant') }}">espace étudiant</a>.</p>
+      {% else %}
+        <form method="POST" action="{{ url_for('candidater', offre_id=offre.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="form-group">
+            <label for="message">Message de motivation (facultatif)</label>
+            <textarea id="message" name="message" rows="5" placeholder="Présentez-vous en quelques lignes..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Envoyer ma candidature</button>
+          </div>
+        </form>
+      {% endif %}
+    {% elif session_role == 'entreprise' %}
+      <p class="text-muted">Les candidatures sont réservées aux étudiants.</p>
+    {% else %}
+      <p>Vous devez être connecté comme étudiant pour candidater.</p>
+      <a href="{{ url_for('connexion_etudiant') }}" class="btn btn-primary">Se connecter</a>
+      <a href="{{ url_for('inscription_etudiant') }}" class="btn btn-outline">Créer un compte étudiant</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

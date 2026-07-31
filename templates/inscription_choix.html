@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Inscription — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <h1 class="text-center">Créer un compte</h1>
+  <p class="text-center text-muted">Choisissez le profil qui vous correspond.</p>
+  <div class="grid-2 mt-3">
+    <div class="profil-card">
+      <h3>🎓 Je suis étudiant</h3>
+      <p>Trouvez votre stage agricole idéal. Gratuit à vie.</p>
+      <a href="{{ url_for('inscription_etudiant') }}" class="btn btn-primary btn-block mt-2">S'inscrire comme étudiant</a>
+    </div>
+    <div class="profil-card">
+      <h3>🏢 Je suis une entreprise</h3>
+      <p>14 jours gratuits, puis 3 000 FCFA/mois.</p>
+      <a href="{{ url_for('inscription_entreprise') }}" class="btn btn-primary btn-block mt-2">S'inscrire comme entreprise</a>
+    </div>
+  </div>
+  <p class="text-center mt-3">Déjà inscrit ? <a href="{{ url_for('connexion_choix') }}">Se connecter</a></p>
+</div>
+{% endblock %}

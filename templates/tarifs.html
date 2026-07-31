@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Tarifs — Bensa{% endblock %}
+{% block content %}
+<div class="container-narrow">
+  <h1 class="text-center">Nos tarifs</h1>
+  <p class="text-center text-muted">Simple, transparent, sans surprise.</p>
+
+  <div class="grid-2 mt-3">
+    <div class="pricing-card">
+      <h3>🎓 Étudiant</h3>
+      <div class="prix">Gratuit <small>/ à vie</small></div>
+      <ul>
+        <li>Inscription illimitée</li>
+        <li>Dépôt de CV</li>
+        <li>Candidatures illimitées</li>
+        <li>Suivi des candidatures</li>
+      </ul>
+      <a href="{{ url_for('inscription_etudiant') }}" class="btn btn-primary btn-block">S'inscrire gratuitement</a>
+    </div>
+
+    <div class="pricing-card">
+      <h3>🏢 Entreprise agricole</h3>
+      <div class="prix">3 000 FCFA <small>/ mois</small></div>
+      <p style="color: var(--vert-principal); font-weight:600;">🎁 14 jours d'essai gratuit</p>
+      <ul>
+        <li>Publier gratuitement une offre pendant la durée d'essai</li>
+        <li>Consultation de tous les CV</li>
+        <li>Gestion des candidatures</li>
+        <li>Paiement mobile simple</li>
+      </ul>
+      <a href="{{ url_for('inscription_entreprise') }}" class="btn btn-primary btn-block">Démarrer l'essai gratuit</a>
+    </div>
+  </div>
+
+  <div class="banner-essai mt-3">
+    <h3>ℹ️ Comment fonctionne l'essai gratuit ?</h3>
+    <p>À votre inscription, vous obtenez immédiatement <strong>14 jours d'accès complet avec publication d'une offre gratuitement,</strong> à toutes les fonctionnalités payantes. À J+12, un rappel vous est envoyé. À J+15, sans paiement validé, votre compte passe en statut « bloqué » : votre profil reste visible mais vous ne pouvez plus publier ni consulter les CV. Un simple paiement de 3 000 FCFA et une preuve envoyée réactivent votre compte.</p>
+  </div>
+</div>
+{% endblock %}

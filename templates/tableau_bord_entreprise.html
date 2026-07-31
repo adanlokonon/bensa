@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord — {{ entreprise.nom }}{% endblock %}
+{% block content %}
+<h1>Bonjour, {{ entreprise.nom }} 👋</h1>
+
+{# Bannière statut d'essai #}
+{% set etat = infos_essai.statut %}
+<div class="banner-essai {% if etat == 'bloque' %}danger{% elif infos_essai.doit_relancer %}warning{% endif %}">
+  <h3>
+    {% if etat == 'en_essai' %}🎁 Essai gratuit en cours
+    {% elif etat == 'actif' %}✅ Abonnement actif
+    {% elif etat == 'bloque' %}⛔ Compte bloqué
+    {% endif %}
+    <span class="badge badge-{{ etat }}">{{ etat }}</span>
+  </h3>
+  <p>{{ infos_essai.message }}</p>
+  {% if etat != 'actif' %}
+    <a href="{{ url_for('abonnement_entreprise') }}" class="btn btn-primary btn-sm mt-1">💳 Soumettre une preuve de paiement</a>
+  {% endif %}
+</div>
+
+<div class="grid-3 mt-2">
+  <div class="stat-card"><div class="stat-nombre">{{ offres|length }}</div><div class="stat-label">Offres publiées</div></div>
+  <div class="stat-card"><div class="stat-nombre">{{ candidatures|length }}</div><div class="stat-label">Candidatures reçues</div></div>
+  <div class="stat-card"><div class="stat-nombre">{{ offres|selectattr('statut','equalto','ouverte')|list|length }}</div><div class="stat-label">Offres ouvertes</div></div>
+</div>
+
+<div class="mt-3" style="display:flex; gap:12px; flex-wrap:wrap;">
+  <a href="{{ url_for('publier_offre') }}" class="btn btn-primary">+ Publier une offre</a>
+  <a href="{{ url_for('liste_cv') }}" class="btn btn-outline">📁 Consulter les CV</a>
+</div>
+
+<h2 class="mt-3">Mes offres</h2>
+{% if offres %}
+  {% for o in offres %}
+    <div class="offre-card">
+      <h3>{{ o.titre }} <span class="badge badge-{{ o.statut }}">{{ o.statut }}</span></h3>
+      <div class="offre-meta">
+        <span>📍 {{ o.lieu or 'Lieu non précisé' }}</span>
+        <span>⏱ {{ o.duree or '—' }}</span>
+        <span>📅 {{ o.date_publication[:10] }}</span>
+      </div>
+      <p class="offre-description">{{ o.description[:200] }}{% if o.description|length > 200 %}…{% endif %}</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="{{ url_for('detail_offre', offre_id=o.id) }}" class="btn btn-outline btn-sm">Voir</a>
+        {% if o.statut == 'ouverte' %}
+          <form method="POST" action="{{ url_for('cloturer_offre', offre_id=o.id) }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-secondary btn-sm">Clôturer</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">Aucune offre publiée pour l'instant. <a href="{{ url_for('publier_offre') }}">Publier votre première offre.</a></p>
+{% endif %}
+
+<h2 class="mt-3">Candidatures reçues</h2>
+{% if candidatures %}
+  <table class="table">
+    <thead>
+      <tr><th>Étudiant</th><th>Offre</th><th>Date</th><th>Statut</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for c in candidatures %}
+      <tr>
+        <td>
+          <strong>{{ c.etudiant_prenom }} {{ c.etudiant_nom }}</strong><br>
+          <small>{{ c.etudiant_email }}</small>
+        </td>
+        <td>{{ c.offre_titre }}</td>
+        <td>{{ c.date_envoi[:10] }}</td>
+        <td><span class="badge badge-{{ c.statut }}">{{ c.statut }}</span></td>
+        <td>
+          {% if c.etudiant_cv %}
+            <a href="{{ c.etudiant_cv }}" target="_blank" class="btn btn-outline btn-sm">CV</a>
+          {% endif %}
+          <form method="POST" action="{{ url_for('maj_statut_candidature', cid=c.id) }}" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <select name="statut" onchange="this.form.submit()" style="padding:4px;">
+              <option value="envoyee"   {% if c.statut=='envoyee'   %}selected{% endif %}>Envoyée</option>
+              <option value="vue"       {% if c.statut=='vue'       %}selected{% endif %}>Vue</option>
+              <option value="contactee" {% if c.statut=='contactee' %}selected{% endif %}>Contactée</option>
+              <option value="refusee"   {% if c.statut=='refusee'   %}selected{% endif %}>Refusée</option>
+            </select>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">Aucune candidature pour l'instant.</p>
+{% endif %}
+{% endblock %}

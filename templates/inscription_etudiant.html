@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Inscription étudiant — Bensa{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>🎓 Créer un compte étudiant</h2>
+  <p class="text-center text-muted mb-2">100% gratuit, à vie.</p>
+  <form method="POST" action="{{ url_for('inscription_etudiant') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="prenom">Prénom *</label>
+      <input type="text" id="prenom" name="prenom" required value="{{ form.prenom or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="nom">Nom *</label>
+      <input type="text" id="nom" name="nom" required value="{{ form.nom or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" required value="{{ form.email or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="mot_de_passe">Mot de passe *</label>
+      <input type="password" id="mot_de_passe" name="mot_de_passe" required minlength="8">
+      <small>Minimum 8 caractères, avec au moins une lettre et un chiffre.</small>
+    </div>
+    <div class="form-group">
+      <label for="telephone">Téléphone</label>
+      <input type="tel" id="telephone" name="telephone" value="{{ form.telephone or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="ecole">École / Université</label>
+      <input type="text" id="ecole" name="ecole" value="{{ form.ecole or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="filiere">Filière</label>
+      <input type="text" id="filiere" name="filiere" placeholder="Ex : agronomie, agroalimentaire..." value="{{ form.filiere or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="niveau">Niveau d'études</label>
+      <select id="niveau" name="niveau">
+        <option value="">-- Sélectionner --</option>
+        <option value="1 ère année LTA ">1 ère année LTA</option>
+        <option value="2 ème année LTA ">2 ème année LTA</option>
+        <option value="3 ème année LTA ">3 ème année LTA</option>
+        <option value="4 ème année LTA ">4 ème année LTA</option>
+        <option value="DEAT">DEAT</option>
+        <option value="Bac+1">Bac+1</option>
+        <option value="Bac+2">Bac+2</option>
+        <option value="Bac+3">Bac+3 / Licence</option>
+        <option value="Bac+4">Bac+4</option>
+        <option value="Bac+5">Bac+5 / Master</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-block">Créer mon compte</button>
+    </div>
+  </form>
+  <p class="form-footer">Déjà inscrit ? <a href="{{ url_for('connexion_etudiant') }}">Se connecter</a></p>
+</div>
+{% endblock %}

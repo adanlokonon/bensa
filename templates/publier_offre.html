@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Publier une offre — Bensa{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>📝 Publier une nouvelle offre de stage</h2>
+  <form method="POST" action="{{ url_for('publier_offre') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="titre">Titre du stage *</label>
+      <input type="text" id="titre" name="titre" required value="{{ form.titre or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="lieu">Lieu</label>
+      <input type="text" id="lieu" name="lieu" value="{{ form.lieu or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="duree">Durée</label>
+      <input type="text" id="duree" name="duree" placeholder="Ex : 3 mois, 6 mois..." value="{{ form.duree or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="competences">Compétences recherchées</label>
+      <input type="text" id="competences" name="competences" placeholder="Ex : agronomie, gestion de projet..." value="{{ form.competences or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="description">Description détaillée *</label>
+      <textarea id="description" name="description" rows="6" required>{{ form.description or '' }}</textarea>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Publier l'offre</button>
+      <a href="{{ url_for('tableau_bord_entreprise') }}" class="btn btn-secondary">Annuler</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

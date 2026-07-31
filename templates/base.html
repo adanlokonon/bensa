@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block description %}Bensa — Ben-Stage-Agro : plateforme de mise en relation entre entreprises agricoles et étudiants stagiaires.{% endblock %}">
+  <title>{% block title %}Bensa — Ben-Stage-Agro{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="nav-container">
+    <a href="{{ url_for('accueil') }}" class="logo">
+      <span class="logo-icon"></span> Bensa
+    </a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
+        <li><a href="{{ url_for('liste_offres_stage') }}">Offres</a></li>
+        <li><a href="{{ url_for('tarifs') }}">Tarifs</a></li>
+        <li><a href="{{ url_for('a_propos') }}">À propos</a></li>
+
+        {% if session_role == 'entreprise' %}
+          <li><a href="{{ url_for('tableau_bord_entreprise') }}">Espace pro</a></li>
+          <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
+        {% elif session_role == 'etudiant' %}
+          <li><a href="{{ url_for('espace_etudiant') }}">Mon espace</a></li>
+          <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
+        {% else %}
+          <li><a href="{{ url_for('connexion_choix') }}">Connexion</a></li>
+          <li><a href="{{ url_for('inscription_choix') }}" class="btn btn-primary btn-sm">S'inscrire</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="flash-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="footer-content">
+    <div>
+      <h4> Bensa</h4>
+      <p style="font-size:.9rem;">Ben-Stage-Agro : la plateforme qui connecte les entreprises agricoles aux talents étudiants.</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
+        <li><a href="{{ url_for('liste_offres_stage') }}">Offres de stage</a></li>
+        <li><a href="{{ url_for('tarifs') }}">Tarifs</a></li>
+        <li><a href="{{ url_for('a_propos') }}">À propos</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Comptes</h4>
+      <ul>
+        <li><a href="{{ url_for('inscription_entreprise') }}">Inscription entreprise</a></li>
+        <li><a href="{{ url_for('inscription_etudiant') }}">Inscription étudiant</a></li>
+        <li><a href="{{ url_for('connexion_choix') }}">Connexion</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li>📧 <a href="mailto:{{ contact_email }}">{{ contact_email }}</a></li>
+        <li>📞 {{ payment_phone }}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-copy">
+    © {{ annee_courante }} — Créé par <strong>CODEMASTER</strong>
+  </div>
+</footer>
+
+</body>
+</html>

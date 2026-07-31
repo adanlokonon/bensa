@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Connexion étudiant — Bensa{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>🎓 Connexion étudiant</h2>
+  <form method="POST" action="{{ url_for('connexion_etudiant') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required autofocus>
+    </div>
+    <div class="form-group">
+      <label for="mot_de_passe">Mot de passe</label>
+      <input type="password" id="mot_de_passe" name="mot_de_passe" required>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+    </div>
+  </form>
+  <p class="form-footer">
+    Pas encore de compte ? <a href="{{ url_for('inscription_etudiant') }}">Créer un compte étudiant</a><br>
+    <a href="{{ url_for('connexion_entreprise') }}">Vous êtes une entreprise ?</a>
+  </p>
+</div>
+{% endblock %}

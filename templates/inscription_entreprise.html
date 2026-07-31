@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Inscription entreprise — Bensa{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h2>🏢 Créer un compte entreprise</h2>
+  <p class="text-center text-muted mb-2">🎁 14 jours d'essai gratuit inclus dès l'inscription</p>
+  <form method="POST" action="{{ url_for('inscription_entreprise') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="form-group">
+      <label for="nom">Nom de l'entreprise *</label>
+      <input type="text" id="nom" name="nom" required value="{{ form.nom or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="email">Email professionnel *</label>
+      <input type="email" id="email" name="email" required value="{{ form.email or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="mot_de_passe">Mot de passe *</label>
+      <input type="password" id="mot_de_passe" name="mot_de_passe" required minlength="8">
+      <small>Minimum 8 caractères, avec au moins une lettre et un chiffre.</small>
+    </div>
+    <div class="form-group">
+      <label for="telephone">Téléphone</label>
+      <input type="tel" id="telephone" name="telephone" value="{{ form.telephone or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="secteur_agricole">Secteur agricole</label>
+      <input type="text" id="secteur_agricole" name="secteur_agricole" placeholder="Ex : élevage, maraîchage, céréales..." value="{{ form.secteur_agricole or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="adresse">Adresse</label>
+      <input type="text" id="adresse" name="adresse" value="{{ form.adresse or '' }}">
+    </div>
+    <div class="form-group">
+      <label for="description">Description de l'entreprise</label>
+      <textarea id="description" name="description" rows="4">{{ form.description or '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-block">Créer mon compte et démarrer l'essai</button>
+    </div>
+  </form>
+  <p class="form-footer">Déjà inscrit ? <a href="{{ url_for('connexion_entreprise') }}">Se connecter</a></p>
+</div>
+{% endblock %}

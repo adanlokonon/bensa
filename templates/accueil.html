@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Bensa — Stages agricoles pour étudiants{% endblock %}
+{% block content %}
+<section class="hero" style="margin: -30px -20px 30px;">
+  <div class="hero-content">
+    <span class="hero-badges"> 14 jours d'essai gratuit pour les entreprises</span>
+    <h1>Connectez l'agriculture aux talents de demain</h1>
+    <p>Bensa met en relation les entreprises agricoles et les étudiants à la recherche d'un stage — simple, rapide, efficace.</p>
+    <div class="hero-cta">
+      <a href="{{ url_for('inscription_etudiant') }}" class="btn btn-primary btn-lg">Je suis étudiant</a>
+      <a href="{{ url_for('inscription_entreprise') }}" class="btn btn-outline btn-lg" style="background:rgba(255,255,255,.9);">Je suis une entreprise</a>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat-card">
+    <div class="stat-nombre">{{ nb_offres }}</div>
+    <div class="stat-label">Offres de stage ouvertes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-nombre">{{ nb_etudiants }}</div>
+    <div class="stat-label">Étudiants inscrits</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-nombre">{{ nb_entreprises }}</div>
+    <div class="stat-label">Entreprises agricoles</div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Un service pensé pour chaque profil</h2>
+  <div class="grid-2">
+    <div class="profil-card">
+      <h3>🎓 Étudiants</h3>
+      <p>Trouvez le stage idéal dans le secteur agricole, gratuitement et sans limite.</p>
+      <ul>
+        <li>Inscription 100 % gratuite</li>
+        <li>Dépôt de CV en ligne sécurisé</li>
+        <li>Consultation illimitée des offres</li>
+        <li>Suivi en temps réel du statut de vos candidatures</li>
+      </ul>
+      <a href="{{ url_for('inscription_etudiant') }}" class="btn btn-primary">Créer mon compte étudiant</a>
+    </div>
+    <div class="profil-card">
+      <h3>🏢 Entreprises agricoles</h3>
+      <p>Publiez vos offres de stage et accédez à un vivier de talents motivés.</p>
+      <ul>
+        <li><strong>14 jours d'essai gratuit</strong> à l'inscription</li>
+        <li>Publication d'une offre gratuitement dans le delai d'essai</li>
+        <li>Consultation des CV des étudiants</li>
+        <li>Puis 3 000 FCFA/mois — paiement mobile simple</li>
+      </ul>
+      <a href="{{ url_for('inscription_entreprise') }}" class="btn btn-primary">Démarrer mon essai gratuit</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Comment ça fonctionne ?</h2>
+  <div class="grid-3">
+    <div class="feature-card">
+      <div class="feature-icon"></div>
+      <h3>1. Je m'inscris</h3>
+      <p>Créez votre compte en 2 minutes — étudiant ou entreprise agricole.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"></div>
+      <h3>2. Je publie ou postule</h3>
+      <p>Publiez une offre ou parcourez les stages disponibles et candidatez en un clic.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"></div>
+      <h3>3. Je suis mes candidatures</h3>
+      <p>Statuts en temps réel : envoyée, vue, contactée, refusée.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section text-center" style="background: var(--vert-pale); border-radius: 12px; padding: 40px 20px;">
+  <h2>Prêt à commencer ?</h2>
+  <p>Rejoignez la communauté Bensa dès aujourd'hui.</p>
+  <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+    <a href="{{ url_for('liste_offres_stage') }}" class="btn btn-primary btn-lg">Voir les offres</a>
+    <a href="{{ url_for('inscription_choix') }}" class="btn btn-outline btn-lg">S'inscrire</a>
+  </div>
+</section>
+{% endblock %}
