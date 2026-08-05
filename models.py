@@ -1,39 +1,63 @@
 """
-models.py — Schéma SQLite de la plateforme Bensa
--------------------------------------------------
+models.py — Schéma PostgreSQL (Supabase) de la plateforme Bensa
 Tables :
-- entreprise : compte entreprise agricole (avec cycle d'essai 14 jours et une offre à deposer)
+- entreprise : compte entreprise agricole (avec cycle d'essai 14 jours)
 - etudiant   : compte étudiant (gratuit à vie)
 - offre      : offres de stage publiées par les entreprises
 - candidature: candidatures des étudiants sur les offres
 - paiement   : preuves de paiement soumises par les entreprises
 """
 
-import sqlite3
 import os
-from datetime import datetime
+import psycopg2
+import psycopg2.extras
+from dotenv import load_dotenv
 
-DB_PATH = os.getenv("DATABASE_PATH", "instance/bensa.db")
+load_dotenv(override=True)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+class ConnWrapper:
+    """
+    Petit adaptateur pour garder une syntaxe proche de sqlite3 :
+    conn.execute(sql, params).fetchone() / .fetchall()
+    au lieu de devoir gérer un curseur séparé partout dans app.py.
+    """
+    def __init__(self, pg_conn):
+        self._conn = pg_conn
+        self._cursor = pg_conn.cursor()
+
+    def execute(self, sql, params=None):
+        # Convertit les placeholders "?" (style SQLite) en "%s" (style psycopg2) si jamais oubliés
+        self._cursor.execute(sql, params or ())
+        return self._cursor
+
+    def commit(self):
+        self._conn.commit()
+
+    def rollback(self):
+        self._conn.rollback()
+
+    def close(self):
+        self._cursor.close()
+        self._conn.close()
 
 
 def get_connection():
-    """Retourne une connexion SQLite avec row_factory activé."""
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON;")
-    return conn
+    """Retourne un wrapper de connexion PostgreSQL, utilisable comme l'ancienne connexion sqlite3."""
+    pg_conn = psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+    return ConnWrapper(pg_conn)
 
 
 def init_db():
     """Initialise la base de données (à exécuter une fois au démarrage)."""
     conn = get_connection()
-    c = conn.cursor()
 
     # --- Table entreprise ---
-    c.execute("""
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS entreprise (
-        id                INTEGER PRIMARY KEY AUTOINCREMENT,
+        id                SERIAL PRIMARY KEY,
         nom               TEXT NOT NULL,
         email             TEXT UNIQUE NOT NULL,
         mot_de_passe_hash TEXT NOT NULL,
@@ -44,16 +68,16 @@ def init_db():
         date_inscription  TEXT NOT NULL,
         date_fin_essai    TEXT NOT NULL,
         statut            TEXT NOT NULL DEFAULT 'en_essai',
-        publier_offre     INTEGER NOT NULL DEFAULT 0,       
+        offres_utilisees  INTEGER NOT NULL DEFAULT 0,
         relance_envoyee   INTEGER NOT NULL DEFAULT 0,
         derniere_connexion TEXT
     );
     """)
 
     # --- Table etudiant ---
-    c.execute("""
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS etudiant (
-        id                INTEGER PRIMARY KEY AUTOINCREMENT,
+        id                SERIAL PRIMARY KEY,
         nom               TEXT NOT NULL,
         prenom            TEXT NOT NULL,
         email             TEXT UNIQUE NOT NULL,
@@ -70,49 +94,45 @@ def init_db():
     """)
 
     # --- Table offre ---
-    c.execute("""
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS offre (
-        id             INTEGER PRIMARY KEY AUTOINCREMENT,
-        entreprise_id  INTEGER NOT NULL,
+        id             SERIAL PRIMARY KEY,
+        entreprise_id  INTEGER NOT NULL REFERENCES entreprise(id) ON DELETE CASCADE,
         titre          TEXT NOT NULL,
         description    TEXT NOT NULL,
         lieu           TEXT,
         duree          TEXT,
         competences    TEXT,
         date_publication TEXT NOT NULL,
-        statut         TEXT NOT NULL DEFAULT 'ouverte',
-        FOREIGN KEY (entreprise_id) REFERENCES entreprise(id) ON DELETE CASCADE
+        statut         TEXT NOT NULL DEFAULT 'ouverte'
     );
     """)
 
     # --- Table candidature ---
-    c.execute("""
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS candidature (
-        id             INTEGER PRIMARY KEY AUTOINCREMENT,
-        offre_id       INTEGER NOT NULL,
-        etudiant_id    INTEGER NOT NULL,
+        id             SERIAL PRIMARY KEY,
+        offre_id       INTEGER NOT NULL REFERENCES offre(id) ON DELETE CASCADE,
+        etudiant_id    INTEGER NOT NULL REFERENCES etudiant(id) ON DELETE CASCADE,
         message        TEXT,
         statut         TEXT NOT NULL DEFAULT 'envoyee',
         date_envoi     TEXT NOT NULL,
-        FOREIGN KEY (offre_id)   REFERENCES offre(id) ON DELETE CASCADE,
-        FOREIGN KEY (etudiant_id) REFERENCES etudiant(id) ON DELETE CASCADE,
         UNIQUE (offre_id, etudiant_id)
     );
     """)
 
     # --- Table paiement ---
-    c.execute("""
+    conn.execute("""
     CREATE TABLE IF NOT EXISTS paiement (
-        id             INTEGER PRIMARY KEY AUTOINCREMENT,
-        entreprise_id  INTEGER NOT NULL,
+        id             SERIAL PRIMARY KEY,
+        entreprise_id  INTEGER NOT NULL REFERENCES entreprise(id) ON DELETE CASCADE,
         montant        INTEGER NOT NULL,
         preuve_url     TEXT,
         preuve_public_id TEXT,
         reference      TEXT,
         statut         TEXT NOT NULL DEFAULT 'en_attente',
         date_envoi     TEXT NOT NULL,
-        date_validation TEXT,
-        FOREIGN KEY (entreprise_id) REFERENCES entreprise(id) ON DELETE CASCADE
+        date_validation TEXT
     );
     """)
 
@@ -121,7 +141,7 @@ def init_db():
 
 
 # ==========================================================
-#  Statuts possibles (à titre documentaire)
+# Statuts possibles (à titre documentaire)
 # ==========================================================
 STATUTS_ENTREPRISE   = ("en_essai", "actif", "bloque")
 STATUTS_OFFRE        = ("ouverte", "cloturee")

@@ -19,6 +19,8 @@ from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 
+load_dotenv()
+
 from models import init_db, get_connection
 from security import (
     hasher_mot_de_passe, verifier_mot_de_passe,
@@ -50,8 +52,6 @@ except ImportError:
 # ==========================================================
 #  Configuration Flask
 # ==========================================================
-load_dotenv()
-
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-key-change-me")
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
@@ -154,17 +154,19 @@ def inscription_entreprise():
 
         conn = get_connection()
         try:
-            conn.execute(
+            row = conn.execute(
                 """INSERT INTO entreprise
                    (nom, email, mot_de_passe_hash, telephone, secteur_agricole,
                     description, adresse, date_inscription, date_fin_essai, statut)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'en_essai')""",
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'en_essai')
+                   RETURNING id""",
                 (nom, email, hasher_mot_de_passe(mot_de_passe), telephone,
                  secteur, description, adresse, date_iso(maintenant), date_iso(date_fin))
-            )
+            ).fetchone()
+            new_id = row["id"]
             conn.commit()
-            new_id = conn.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
         except Exception:
+            conn.rollback()
             conn.close()
             flash("Cet email est déjà utilisé par une autre entreprise.", "danger")
             return render_template("inscription_entreprise.html", form=request.form)
@@ -211,16 +213,18 @@ def inscription_etudiant():
 
         conn = get_connection()
         try:
-            conn.execute(
+            row = conn.execute(
                 """INSERT INTO etudiant
                    (nom, prenom, email, mot_de_passe_hash, telephone, ecole, filiere, niveau, date_inscription)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                   RETURNING id""",
                 (nom, prenom, email, hasher_mot_de_passe(mot_de_passe),
                  telephone, ecole, filiere, niveau, date_iso(datetime.now()))
-            )
+            ).fetchone()
+            new_id = row["id"]
             conn.commit()
-            new_id = conn.execute("SELECT last_insert_rowid() AS id").fetchone()["id"]
         except Exception:
+            conn.rollback()
             conn.close()
             flash("Cet email est déjà utilisé.", "danger")
             return render_template("inscription_etudiant.html", form=request.form)
@@ -248,14 +252,14 @@ def connexion_entreprise():
         mot_de_passe = request.form.get("mot_de_passe", "")
 
         conn = get_connection()
-        row = conn.execute("SELECT * FROM entreprise WHERE email = ?", (email,)).fetchone()
+        row = conn.execute("SELECT * FROM entreprise WHERE email = %s", (email,)).fetchone()
 
         if not row or not verifier_mot_de_passe(row["mot_de_passe_hash"], mot_de_passe):
             conn.close()
             flash("Email ou mot de passe incorrect.", "danger")
             return render_template("connexion_entreprise.html")
 
-        conn.execute("UPDATE entreprise SET derniere_connexion=? WHERE id=?",
+        conn.execute("UPDATE entreprise SET derniere_connexion=%s WHERE id=%s",
                      (date_iso(datetime.now()), row["id"]))
         conn.commit()
         conn.close()
@@ -289,14 +293,14 @@ def connexion_etudiant():
         mot_de_passe = request.form.get("mot_de_passe", "")
 
         conn = get_connection()
-        row = conn.execute("SELECT * FROM etudiant WHERE email = ?", (email,)).fetchone()
+        row = conn.execute("SELECT * FROM etudiant WHERE email = %s", (email,)).fetchone()
 
         if not row or not verifier_mot_de_passe(row["mot_de_passe_hash"], mot_de_passe):
             conn.close()
             flash("Email ou mot de passe incorrect.", "danger")
             return render_template("connexion_etudiant.html")
 
-        conn.execute("UPDATE etudiant SET derniere_connexion=? WHERE id=?",
+        conn.execute("UPDATE etudiant SET derniere_connexion=%s WHERE id=%s",
                      (date_iso(datetime.now()), row["id"]))
         conn.commit()
         conn.close()
@@ -326,9 +330,9 @@ def tableau_bord_entreprise():
     infos = verifier_statut_entreprise(eid)
 
     conn = get_connection()
-    entreprise = conn.execute("SELECT * FROM entreprise WHERE id=?", (eid,)).fetchone()
+    entreprise = conn.execute("SELECT * FROM entreprise WHERE id=%s", (eid,)).fetchone()
     offres = conn.execute(
-        "SELECT * FROM offre WHERE entreprise_id=? ORDER BY date_publication DESC",
+        "SELECT * FROM offre WHERE entreprise_id=%s ORDER BY date_publication DESC",
         (eid,)
     ).fetchall()
     candidatures = conn.execute("""
@@ -337,7 +341,7 @@ def tableau_bord_entreprise():
         FROM candidature c
         JOIN offre o ON o.id = c.offre_id
         JOIN etudiant e ON e.id = c.etudiant_id
-        WHERE o.entreprise_id = ?
+        WHERE o.entreprise_id = %s
         ORDER BY c.date_envoi DESC
     """, (eid,)).fetchall()
     conn.close()
@@ -360,11 +364,11 @@ def publier_offre():
         return redirect(url_for("abonnement_entreprise"))
 
     conn = get_connection()
-    entreprise = conn.execute("SELECT statut FROM entreprise WHERE id=?", (eid,)).fetchone()
+    entreprise = conn.execute("SELECT statut FROM entreprise WHERE id=%s", (eid,)).fetchone()
 
     if entreprise["statut"] == "en_essai":
         nb_offres = conn.execute(
-            "SELECT COUNT(*) AS n FROM offre WHERE entreprise_id=?", (eid,)
+            "SELECT COUNT(*) AS n FROM offre WHERE entreprise_id=%s", (eid,)
         ).fetchone()["n"]
         if nb_offres >= 1:
             conn.close()
@@ -390,7 +394,7 @@ def publier_offre():
         conn = get_connection()
         conn.execute(
             """INSERT INTO offre (entreprise_id, titre, description, lieu, duree, competences, date_publication)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (%s, %s, %s, %s, %s, %s, %s)""",
             (eid, titre, description, lieu, duree, competences, date_iso(datetime.now()))
         )
         conn.commit()
@@ -404,11 +408,11 @@ def publier_offre():
 def cloturer_offre(offre_id):
     eid = session["user_id"]
     conn = get_connection()
-    row = conn.execute("SELECT * FROM offre WHERE id=? AND entreprise_id=?", (offre_id, eid)).fetchone()
+    row = conn.execute("SELECT * FROM offre WHERE id=%s AND entreprise_id=%s", (offre_id, eid)).fetchone()
     if not row:
         conn.close()
         abort(404)
-    conn.execute("UPDATE offre SET statut='cloturee' WHERE id=?", (offre_id,))
+    conn.execute("UPDATE offre SET statut='cloturee' WHERE id=%s", (offre_id,))
     conn.commit()
     conn.close()
     flash("Offre clôturée.", "info")
@@ -427,12 +431,12 @@ def maj_statut_candidature(cid):
     row = conn.execute("""
         SELECT c.id FROM candidature c
         JOIN offre o ON o.id = c.offre_id
-        WHERE c.id = ? AND o.entreprise_id = ?
+        WHERE c.id = %s AND o.entreprise_id = %s
     """, (cid, eid)).fetchone()
     if not row:
         conn.close()
         abort(403)
-    conn.execute("UPDATE candidature SET statut=? WHERE id=?", (nouveau_statut, cid))
+    conn.execute("UPDATE candidature SET statut=%s WHERE id=%s", (nouveau_statut, cid))
     conn.commit()
     conn.close()
     flash("Statut de la candidature mis à jour.", "success")
@@ -463,9 +467,9 @@ def liste_cv():
 def abonnement_entreprise():
     eid = session["user_id"]
     conn = get_connection()
-    entreprise = conn.execute("SELECT * FROM entreprise WHERE id=?", (eid,)).fetchone()
+    entreprise = conn.execute("SELECT * FROM entreprise WHERE id=%s", (eid,)).fetchone()
     paiements = conn.execute(
-        "SELECT * FROM paiement WHERE entreprise_id=? ORDER BY date_envoi DESC",
+        "SELECT * FROM paiement WHERE entreprise_id=%s ORDER BY date_envoi DESC",
         (eid,)
     ).fetchall()
 
@@ -493,7 +497,7 @@ def abonnement_entreprise():
         conn.execute("""
             INSERT INTO paiement (entreprise_id, montant, preuve_url, preuve_public_id,
                                   reference, statut, date_envoi)
-            VALUES (?, ?, ?, ?, ?, 'en_attente', ?)
+            VALUES (%s, %s, %s, %s, %s, 'en_attente', %s)
         """, (eid, int(os.getenv("SUBSCRIPTION_AMOUNT_FCFA", "3000")),
               preuve_url, preuve_public_id, reference, date_iso(datetime.now())))
         conn.commit()
@@ -524,13 +528,13 @@ def confirmation_paiement():
 def espace_etudiant():
     eid = session["user_id"]
     conn = get_connection()
-    etudiant = conn.execute("SELECT * FROM etudiant WHERE id=?", (eid,)).fetchone()
+    etudiant = conn.execute("SELECT * FROM etudiant WHERE id=%s", (eid,)).fetchone()
     candidatures = conn.execute("""
         SELECT c.*, o.titre AS offre_titre, o.lieu AS offre_lieu, e.nom AS entreprise_nom
         FROM candidature c
         JOIN offre o ON o.id = c.offre_id
         JOIN entreprise e ON e.id = o.entreprise_id
-        WHERE c.etudiant_id = ?
+        WHERE c.etudiant_id = %s
         ORDER BY c.date_envoi DESC
     """, (eid,)).fetchall()
     conn.close()
@@ -567,7 +571,7 @@ def depot_cv():
 
             conn = get_connection()
             conn.execute(
-                "UPDATE etudiant SET cv_url=?, cv_public_id=? WHERE id=?",
+                "UPDATE etudiant SET cv_url=%s, cv_public_id=%s WHERE id=%s",
                 (cv_url, public_id, eid)
             )
             conn.commit()
@@ -592,7 +596,7 @@ def candidature_statut(cid):
         FROM candidature c
         JOIN offre o ON o.id = c.offre_id
         JOIN entreprise e ON e.id = o.entreprise_id
-        WHERE c.id = ? AND c.etudiant_id = ?
+        WHERE c.id = %s AND c.etudiant_id = %s
     """, (cid, eid)).fetchone()
     conn.close()
     if not cand:
@@ -612,7 +616,7 @@ def liste_offres_stage():
             SELECT o.*, e.nom AS entreprise_nom
             FROM offre o JOIN entreprise e ON e.id = o.entreprise_id
             WHERE o.statut='ouverte'
-              AND (o.titre LIKE ? OR o.description LIKE ? OR o.lieu LIKE ?)
+              AND (o.titre LIKE %s OR o.description LIKE %s OR o.lieu LIKE %s)
             ORDER BY o.date_publication DESC
         """, (f"%{q}%", f"%{q}%", f"%{q}%")).fetchall()
     else:
@@ -633,17 +637,17 @@ def detail_offre(offre_id):
         SELECT o.*, e.nom AS entreprise_nom, e.secteur_agricole, e.description AS entreprise_desc,
                e.email AS entreprise_email
         FROM offre o JOIN entreprise e ON e.id = o.entreprise_id
-        WHERE o.id = ?
+        WHERE o.id = %s
     """, (offre_id,)).fetchone()
     conn.close()
     if not offre:
         abort(404)
-    # A-t-il déjà candidaté ?
+    # A-t-il déjà candidaté %s
     deja_candidate = False
     if session.get("user_role") == "etudiant":
         conn = get_connection()
         r = conn.execute(
-            "SELECT id FROM candidature WHERE offre_id=? AND etudiant_id=?",
+            "SELECT id FROM candidature WHERE offre_id=%s AND etudiant_id=%s",
             (offre_id, session["user_id"])
         ).fetchone()
         conn.close()
@@ -658,13 +662,13 @@ def candidater(offre_id):
     message = nettoyer_texte(request.form.get("message", ""), 1000)
 
     conn = get_connection()
-    etu = conn.execute("SELECT cv_url FROM etudiant WHERE id=?", (eid,)).fetchone()
+    etu = conn.execute("SELECT cv_url FROM etudiant WHERE id=%s", (eid,)).fetchone()
     if not etu or not etu["cv_url"]:
         conn.close()
         flash("Vous devez déposer votre CV avant de candidater.", "warning")
         return redirect(url_for("depot_cv"))
 
-    offre = conn.execute("SELECT id FROM offre WHERE id=? AND statut='ouverte'", (offre_id,)).fetchone()
+    offre = conn.execute("SELECT id FROM offre WHERE id=%s AND statut='ouverte'", (offre_id,)).fetchone()
     if not offre:
         conn.close()
         flash("Cette offre n'est plus disponible.", "danger")
@@ -672,7 +676,7 @@ def candidater(offre_id):
 
     try:
         conn.execute(
-            "INSERT INTO candidature (offre_id, etudiant_id, message, statut, date_envoi) VALUES (?, ?, ?, 'envoyee', ?)",
+            "INSERT INTO candidature (offre_id, etudiant_id, message, statut, date_envoi) VALUES (%s, %s, %s, 'envoyee', %s)",
             (offre_id, eid, message, date_iso(datetime.now()))
         )
         conn.commit()
@@ -710,12 +714,3 @@ def erreur_500(e):
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_ENV") == "development",
             host="0.0.0.0", port=int(os.getenv("PORT", "5000")))
-from flask import send_from_directory
-
-@app.route("/sitemap.xml")
-def sitemap():
-    return send_from_directory("static", "sitemap.xml", mimetype="application/xml")
-
-@app.route("/robots.txt")
-def robots():
-    return send_from_directory("static", "robots.txt", mimetype="text/plain")
