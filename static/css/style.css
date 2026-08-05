@@ -454,3 +454,67 @@ table.table tr:hover { background: #fafaf7; }
   h2 { font-size: 1.35rem; }
   main { padding: 20px 14px; }
 }
+.nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.nav-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background: #1e4620;
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #ffffff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        padding: 10px 20px;
+        z-index: 999;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: left;
+        padding: 12px 0;
+        border-bottom: 1px solid #e0e0e0;
+        list-style: none;
+    }
+
+    .nav-links li a {
+        color: #1e4620;
+        font-weight: 500;
+    }
+
+    .nav-links li a.btn-primary {
+        color: #ffffff;
+        display: inline-block;
+    }
+
+    nav {
+        position: relative;
+    }
+}

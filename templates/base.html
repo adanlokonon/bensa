@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+document.getElementById('navToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+</script>
 </head>
 <body>
 
@@ -19,23 +24,29 @@
       <span class="logo-icon"></span> Bensa
     </a>
     <nav>
-      <ul class="nav-links">
-        <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
-        <li><a href="{{ url_for('liste_offres_stage') }}">Offres</a></li>
-        <li><a href="{{ url_for('tarifs') }}">Tarifs</a></li>
-        <li><a href="{{ url_for('a_propos') }}">À propos</a></li>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
-        {% if session_role == 'entreprise' %}
-          <li><a href="{{ url_for('tableau_bord_entreprise') }}">Espace pro</a></li>
-          <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
-        {% elif session_role == 'etudiant' %}
-          <li><a href="{{ url_for('espace_etudiant') }}">Mon espace</a></li>
-          <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
-        {% else %}
-          <li><a href="{{ url_for('connexion_choix') }}">Connexion</a></li>
-          <li><a href="{{ url_for('inscription_choix') }}" class="btn btn-primary btn-sm">S'inscrire</a></li>
-        {% endif %}
-      </ul>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="{{ url_for('accueil') }}">Accueil</a></li>
+            <li><a href="{{ url_for('liste_offres_stage') }}">Offres</a></li>
+            <li><a href="{{ url_for('tarifs') }}">Tarifs</a></li>
+            <li><a href="{{ url_for('a_propos') }}">À propos</a></li>
+
+            {% if session_role == 'entreprise' %}
+                <li><a href="{{ url_for('tableau_bord_entreprise') }}">Espace pro</a></li>
+                <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
+            {% elif session_role == 'etudiant' %}
+                <li><a href="{{ url_for('espace_etudiant') }}">Mon espace</a></li>
+                <li><a href="{{ url_for('deconnexion') }}">Déconnexion</a></li>
+            {% else %}
+                <li><a href="{{ url_for('connexion_choix') }}">Connexion</a></li>
+                <li><a href="{{ url_for('inscription_choix') }}" class="btn btn-primary btn-sm">S'inscrire</a></li>
+            {% endif %}
+        </ul>
     </nav>
   </div>
 </header>
