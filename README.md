@@ -42,7 +42,7 @@ Développée par **CODEMASTER**, Édition Lancement — Offre 14 jours gratuits.
 ## 🛠 Stack technique
 
 - **Backend** : Python 3.11+ / Flask 3
-- **Base de données** : SQLite (fichier `instance/bensa.db`)
+- **Base de données** : PostgreSQL (Supabase)
 - **Sécurité** : Flask-WTF (CSRF), Werkzeug (PBKDF2)
 - **Stockage fichiers** : Cloudinary (CV & preuves de paiement)
 - **Templates** : Jinja2
@@ -56,7 +56,7 @@ Développée par **CODEMASTER**, Édition Lancement — Offre 14 jours gratuits.
 ```
 bensa/
 ├── app.py                  # Application Flask principale, toutes les routes
-├── models.py               # Schéma SQLite (5 tables)
+├── models.py               # Schéma PostgreSQL
 ├── security.py             # Hachage, CSRF, rate-limit, décorateurs
 ├── notifications.py        # Cycle d'essai 14 jours (J+12, J+15)
 ├── requirements.txt
