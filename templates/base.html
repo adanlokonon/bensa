@@ -10,7 +10,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</script>
+<style>
+.password-field {
+  position: relative;
+  display: inline-block;
+}
+.password-field input {
+  padding-right: 35px;
+}
+.password-field span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+}
+</style>
 </head>
 <body>
 
@@ -46,6 +62,10 @@
     </nav>
   </div>
 </header>
+<div class="password-field">
+  <input type="password" id="pwd" name="password" placeholder="Mot de passe">
+  <span id="toggleEye" onclick="togglePassword()">👁️</span>
+</div>
 
 <div class="flash-container">
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -98,6 +118,18 @@
 document.getElementById('navToggle').addEventListener('click', function() {
     document.getElementById('navLinks').classList.toggle('active');
 });
+
+function togglePassword() {
+  const input = document.getElementById('pwd');
+  const eye = document.getElementById('toggleEye');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    eye.textContent = '👁️';
+  }
+}
 </script>
 </body>
 </html>

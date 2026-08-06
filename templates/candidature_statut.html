@@ -8,9 +8,9 @@
   <div class="offre-card">
     <h2>{{ cand.offre_titre }}</h2>
     <div class="offre-meta">
-      <span>🏢 {{ cand.entreprise_nom }}</span>
-      <span>📍 {{ cand.offre_lieu or '—' }}</span>
-      <span>📅 Envoyée le {{ cand.date_envoi[:10] }}</span>
+      <span>{{ cand.entreprise_nom }}</span>
+      <span>{{ cand.offre_lieu or '—' }}</span>
+      <span> Envoyée le {{ cand.date_envoi[:10] }}</span>
     </div>
     <p><strong>Statut actuel :</strong> <span class="badge badge-{{ cand.statut }}">{{ cand.statut }}</span></p>
 
