@@ -496,17 +496,19 @@ table.table tr:hover { background: #fafaf7; }
     }
 
     .nav-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background: #ffffff;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        padding: 10px 20px;
-        z-index: 999;
-    }
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    padding: 10px 20px;
+    z-index: 999;
+    box-sizing: border-box;
+}
 
     .nav-links.active {
         display: flex;
