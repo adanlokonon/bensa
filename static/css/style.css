@@ -441,19 +441,16 @@ table.table tr:hover { background: #fafaf7; }
 .text-muted { color: var(--gris); }
 .text-small { font-size: .9rem; }
 
-/* =========================================================
-   /* =========================================================
-   Responsive
-   ========================================================= */
 @media (max-width: 768px) {
   .nav-container {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
+    position: relative;
   }
 
-  .nav-links { width: 100%; justify-content: flex-start; gap: 12px; }
+  .nav-links { justify-content: flex-start; gap: 12px; }
   .hero h1 { font-size: 2rem; }
   .hero p { font-size: 1rem; }
   .form-card { padding: 24px 20px; }
@@ -491,24 +488,22 @@ table.table tr:hover { background: #fafaf7; }
     nav {
         display: flex;
         justify-content: flex-end;
-        width: auto;
-        position: relative;
     }
 
     .nav-links {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #ffffff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    padding: 10px 20px;
-    z-index: 999;
-    box-sizing: border-box;
-}
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        padding: 10px 20px;
+        z-index: 999;
+        box-sizing: border-box;
+    }
 
     .nav-links.active {
         display: flex;
