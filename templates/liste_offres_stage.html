@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Offres de stage — Bensa{% endblock %}
 {% block content %}
-<h1>🔎 Offres de stage disponibles</h1>
+<h1> Offres de stage disponibles</h1>
 
 <form method="GET" action="{{ url_for('liste_offres_stage') }}" class="mt-2" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
   <input type="text" name="q" value="{{ recherche }}" placeholder="Rechercher par mot-clé, lieu, secteur..." style="flex:1; padding:10px; border:1px solid var(--gris-clair); border-radius:6px;">
@@ -16,9 +16,9 @@
       <h3><a href="{{ url_for('detail_offre', offre_id=o.id) }}">{{ o.titre }}</a></h3>
       <div class="offre-meta">
         <span>🏢 {{ o.entreprise_nom }}</span>
-        <span>📍 {{ o.lieu or 'Lieu non précisé' }}</span>
-        <span>⏱ {{ o.duree or '—' }}</span>
-        <span>📅 {{ o.date_publication[:10] }}</span>
+        <span> {{ o.lieu or 'Lieu non précisé' }}</span>
+        <span> {{ o.duree or '—' }}</span>
+        <span> {{ o.date_publication[:10] }}</span>
       </div>
       <p class="offre-description">{{ o.description[:200] }}{% if o.description|length > 200 %}…{% endif %}</p>
       <a href="{{ url_for('detail_offre', offre_id=o.id) }}" class="btn btn-primary btn-sm">Voir & candidater</a>

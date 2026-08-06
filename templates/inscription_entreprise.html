@@ -3,7 +3,7 @@
 {% block content %}
 <div class="form-card">
   <h2>🏢 Créer un compte entreprise</h2>
-  <p class="text-center text-muted mb-2">🎁 14 jours d'essai gratuit inclus dès l'inscription</p>
+  <p class="text-center text-muted mb-2"> 14 jours d'essai gratuit inclus dès l'inscription</p>
   <form method="POST" action="{{ url_for('inscription_entreprise') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 

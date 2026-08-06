@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Tableau de bord — {{ entreprise.nom }}{% endblock %}
 {% block content %}
-<h1>Bonjour, {{ entreprise.nom }} 👋</h1>
+<h1>Bonjour, {{ entreprise.nom }} </h1>
 
 {# Bannière statut d'essai #}
 {% set etat = infos_essai.statut %}
@@ -36,9 +36,9 @@
     <div class="offre-card">
       <h3>{{ o.titre }} <span class="badge badge-{{ o.statut }}">{{ o.statut }}</span></h3>
       <div class="offre-meta">
-        <span>📍 {{ o.lieu or 'Lieu non précisé' }}</span>
-        <span>⏱ {{ o.duree or '—' }}</span>
-        <span>📅 {{ o.date_publication[:10] }}</span>
+        <span>{{ o.lieu or 'Lieu non précisé' }}</span>
+        <span>{{ o.duree or '—' }}</span>
+        <span> {{ o.date_publication[:10] }}</span>
       </div>
       <p class="offre-description">{{ o.description[:200] }}{% if o.description|length > 200 %}…{% endif %}</p>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">

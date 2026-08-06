@@ -2,7 +2,7 @@
 {% block title %}Dépôt de CV — Bensa{% endblock %}
 {% block content %}
 <div class="form-card">
-  <h2>📤 Déposer mon CV</h2>
+  <h2>Déposer mon CV</h2>
   <p class="text-muted">Le CV est envoyé de manière sécurisée sur Cloudinary. Formats acceptés : PDF, DOC, DOCX (5 Mo max).</p>
   <form method="POST" action="{{ url_for('depot_cv') }}" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

@@ -6,10 +6,10 @@
   <div class="offre-card mt-2" style="padding: 30px;">
     <h1>{{ offre.titre }}</h1>
     <div class="offre-meta">
-      <span>🏢 <strong>{{ offre.entreprise_nom }}</strong></span>
-      <span>📍 {{ offre.lieu or 'Lieu non précisé' }}</span>
-      <span>⏱ {{ offre.duree or '—' }}</span>
-      <span>📅 Publiée le {{ offre.date_publication[:10] }}</span>
+      <span> <strong>{{ offre.entreprise_nom }}</strong></span>
+      <span>{{ offre.lieu or 'Lieu non précisé' }}</span>
+      <span> {{ offre.duree or '—' }}</span>
+      <span>Publiée le {{ offre.date_publication[:10] }}</span>
     </div>
 
     <h3 class="mt-2">Description</h3>
@@ -29,7 +29,7 @@
 
   {# Candidature #}
   <div class="form-card mt-3">
-    <h2>📩 Candidater à cette offre</h2>
+    <h2>Candidater à cette offre</h2>
     {% if session_role == 'etudiant' %}
       {% if deja_candidate %}
         <p>✅ Vous avez déjà candidaté à cette offre. Consultez le statut depuis votre <a href="{{ url_for('espace_etudiant') }}">espace étudiant</a>.</p>

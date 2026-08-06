@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bienvenue sur BENSA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #0f3d2e 0%, #061a13 100%);
+    font-family: 'Georgia', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Emojis de plantes flottants en fond */
+  .plant {
+    position: absolute;
+    font-size: 2.5rem;
+    opacity: 0.85;
+    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(0,255,150,0.4));
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%      { transform: translateY(-25px) rotate(10deg); }
+  }
+
+  /* Conteneur du demi-cercle */
+  .arc {
+    position: relative;
+    width: 700px;
+    height: 350px;
+  }
+
+  .letter {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    font-size: 2.6rem;
+    font-weight: bold;
+    color: #d4ffd4;
+    text-shadow: 0 0 15px #4dff88, 0 0 25px #2ecc71;
+    transform-origin: center;
+    opacity: 0;
+    animation: appear 1s forwards, ashes 3s forwards;
+  }
+
+  /* Apparition sur le demi-cercle */
+  @keyframes appear {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  /* Effet cendre / éparpillement */
+  @keyframes ashes {
+    0%   { opacity: 1; filter: blur(0px); }
+    60%  { opacity: 1; filter: blur(0px); }
+    80%  { opacity: 0.6; filter: blur(2px); color: #ffb347; }
+    100% {
+      opacity: 0;
+      filter: blur(8px);
+      color: #555;
+      transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.3);
+    }
+  }
+
+  /* Petites particules de cendre */
+  .ash {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffcc80;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="arc" id="arc"></div>
+
+<script>
+  /* ====== TEXTE EN DEMI-CERCLE ====== */
+  const text = "BIENVENUE SUR BENSA";
+  const arc  = document.getElementById("arc");
+  const letters = text.split("");
+  const radius = 250;
+  const total  = letters.length;
+
+  letters.forEach((ch, i) => {
+    const span = document.createElement("span");
+    span.className = "letter";
+    span.textContent = ch === " " ? "\u00A0" : ch;
+
+    // Angle réparti sur 180° (demi-cercle du haut)
+    const angle = (Math.PI * i) / (total - 1);          // 0 → π
+    const x = -Math.cos(angle) * radius;                // gauche → droite
+    const y = -Math.sin(angle) * radius;                // vers le haut
+    const rotate = (angle * 180 / Math.PI) - 90;        // orientation tangente
+
+    span.style.transform =
+      `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
+
+    // Direction aléatoire pour l'éparpillement final
+    const dx  = (Math.random() - 0.5) * 600 + "px";
+    const dy  = -Math.random() * 400 - 100 + "px";
+    const rot = (Math.random() - 0.5) * 720 + "deg";
+    span.style.setProperty("--dx", dx);
+    span.style.setProperty("--dy", dy);
+    span.style.setProperty("--rot", rot);
+
+    // Délais : apparition en séquence, disparition ensemble
+    span.style.animationDelay = `${i * 0.12}s, 3.5s`;
+    span.style.animationDuration = `1s, 3s`;
+
+    arc.appendChild(span);
+  });
+
+  /* ====== EMOJIS DE PLANTES EN FOND ====== */
+  const plants = ["🌿","🌱","🌴","🌵","🍀","🌳","🍃","🌲","🪴","🌾"];
+  const nb = 25;
+  for (let i = 0; i < nb; i++) {
+    const p = document.createElement("div");
+    p.className = "plant";
+    p.textContent = plants[Math.floor(Math.random() * plants.length)];
+    p.style.left = Math.random() * 100 + "vw";
+    p.style.top  = Math.random() * 100 + "vh";
+    p.style.fontSize = (1.5 + Math.random() * 2.5) + "rem";
+    p.style.animationDuration = (4 + Math.random() * 6) + "s";
+    p.style.animationDelay = (Math.random() * 5) + "s";
+    document.body.appendChild(p);
+  }
+
+  /* ====== PARTICULES DE CENDRE ====== */
+  function spawnAshes() {
+    for (let i = 0; i < 80; i++) {
+      const a = document.createElement("div");
+      a.className = "ash";
+      a.style.left = (50 + (Math.random() - 0.5) * 40) + "vw";
+      a.style.top  = (50 - Math.random() * 20) + "vh";
+      document.body.appendChild(a);
+
+      const dx = (Math.random() - 0.5) * 500;
+      const dy = -Math.random() * 400 - 100;
+      a.animate([
+        { transform: "translate(0,0)",              opacity: 1, background: "#ffcc80" },
+        { transform: `translate(${dx}px, ${dy}px)`, opacity: 0, background: "#555"    }
+      ], {
+        duration: 3000 + Math.random() * 2000,
+        easing: "ease-out",
+        fill: "forwards"
+      });
+    }
+  }
+
+  // Déclenche les cendres au moment où le texte disparaît
+  setTimeout(spawnAshes, 3500);
+
+  /* ====== BOUCLE : on relance l'animation ====== */
+  setInterval(() => {
+    document.querySelectorAll(".letter").forEach(el => {
+      el.style.animation = "none";
+      void el.offsetWidth; // reflow
+      el.style.animation = "";
+    });
+    document.querySelectorAll(".ash").forEach(el => el.remove());
+    setTimeout(spawnAshes, 3500);
+  }, 8000);
+</script>
+
+</body>
+</html>
