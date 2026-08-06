@@ -10,10 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script>
-document.getElementById('navToggle').addEventListener('click', function() {
-    document.getElementById('navLinks').classList.toggle('active');
-});
 </script>
 </head>
 <body>
@@ -98,6 +94,10 @@ document.getElementById('navToggle').addEventListener('click', function() {
     © {{ annee_courante }} — Créé par <strong>CODEMASTER</strong>
   </div>
 </footer>
-
+<script>
+document.getElementById('navToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('active');
+});
+</script>
 </body>
 </html>
