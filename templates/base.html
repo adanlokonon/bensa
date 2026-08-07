@@ -62,11 +62,6 @@
     </nav>
   </div>
 </header>
-<div class="password-field">
-  <input type="password" id="pwd" name="password" placeholder="Mot de passe">
-  <span id="toggleEye" onclick="togglePassword()">👁️</span>
-</div>
-
 <div class="flash-container">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% for category, message in messages %}

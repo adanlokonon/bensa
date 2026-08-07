@@ -17,6 +17,10 @@
     </div>
     <div class="form-group">
       <label for="mot_de_passe">Mot de passe *</label>
+      <div class="password-field">
+  <input type="password" id="pwd" name="password" placeholder="Mot de passe">
+  <span id="toggleEye" onclick="togglePassword()">👁️</span>
+</div>
       <input type="password" id="mot_de_passe" name="mot_de_passe" required minlength="8">
       <small>Minimum 8 caractères, avec au moins une lettre et un chiffre.</small>
     </div>
