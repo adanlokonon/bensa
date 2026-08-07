@@ -9,10 +9,14 @@
       <label for="email">Email</label>
       <input type="email" id="email" name="email" required autofocus>
     </div>
-    <div class="form-group">
-      <label for="mot_de_passe">Mot de passe</label>
-      <input type="password" id="mot_de_passe" name="mot_de_passe" required>
-    </div>
+   <div class="form-group">
+  <label for="pwd">Mot de passe *</label>
+  <div class="password-field">
+    <input type="password" id="pwd" name="password" placeholder="Mot de passe" required minlength="8">
+    <span id="toggleEye" onclick="togglePassword()">👁️</span>
+  </div>
+  <small>Minimum 8 caractères, avec au moins une lettre et un chiffre.</small>
+</div>
     <div class="form-actions">
       <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
     </div>
