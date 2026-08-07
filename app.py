@@ -714,3 +714,27 @@ def erreur_500(e):
 if __name__ == "__main__":
     app.run(debug=os.getenv("FLASK_ENV") == "development",
             host="0.0.0.0", port=int(os.getenv("PORT", "5000")))
+from flask import Response
+
+@app.route('/sitemap.xml')
+def sitemap():
+    base = 'https://bensa.onrender.com'
+    pages = [
+        {'loc': f'{base}/', 'priority': '1.0'},
+        {'loc': f'{base}/detail_offres', 'priority': '0.9'},
+        {'loc': f'{base}/tarifs', 'priority': '0.8'},
+        {'loc': f'{base}/a_propos', 'priority': '0.6'},
+        {'loc': f'{base}/inscription_entreprise', 'priority': '0.7'},
+        {'loc': f'{base}/inscription_etudiant', 'priority': '0.7'},
+    ]
+
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for page in pages:
+        xml += '  <url>\n'
+        xml += f'    <loc>{page["loc"]}</loc>\n'
+        xml += f'    <priority>{page["priority"]}</priority>\n'
+        xml += '  </url>\n'
+    xml += '</urlset>'
+
+    return Response(xml, mimetype='application/xml')
