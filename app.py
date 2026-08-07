@@ -130,7 +130,7 @@ def inscription_entreprise():
     if request.method == "POST":
         nom = nettoyer_texte(request.form.get("nom", ""), 100)
         email = nettoyer_texte(request.form.get("email", ""), 120).lower()
-        mot_de_passe = request.form.get("mot_de_passe", "")
+        mot_de_passe = request.form.get("password", "")
         telephone = nettoyer_texte(request.form.get("telephone", ""), 30)
         secteur = nettoyer_texte(request.form.get("secteur_agricole", ""), 100)
         description = nettoyer_texte(request.form.get("description", ""), 1000)
@@ -192,7 +192,7 @@ def inscription_etudiant():
         nom = nettoyer_texte(request.form.get("nom", ""), 100)
         prenom = nettoyer_texte(request.form.get("prenom", ""), 100)
         email = nettoyer_texte(request.form.get("email", ""), 120).lower()
-        mot_de_passe = request.form.get("mot_de_passe", "")
+        mot_de_passe = request.form.get("password", "")
         telephone = nettoyer_texte(request.form.get("telephone", ""), 30)
         ecole = nettoyer_texte(request.form.get("ecole", ""), 150)
         filiere = nettoyer_texte(request.form.get("filiere", ""), 100)
@@ -249,7 +249,7 @@ def connexion_entreprise():
             return render_template("connexion_entreprise.html")
 
         email = nettoyer_texte(request.form.get("email", ""), 120).lower()
-        mot_de_passe = request.form.get("mot_de_passe", "")
+        mot_de_passe = request.form.get("password", "")
 
         conn = get_connection()
         row = conn.execute("SELECT * FROM entreprise WHERE email = %s", (email,)).fetchone()
